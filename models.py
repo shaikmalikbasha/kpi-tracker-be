@@ -7,7 +7,7 @@ from sqlalchemy import ForeignKey
 
 # SQLALCHEMY
 engine = create_async_engine(
-    "sqlite+aiosqlite:///kpi-tracker-db.sqlite3",
+    "sqlite+aiosqlite:///kpi-tracker-db_tmp.sqlite3",
     connect_args={"check_same_thread": False},
 )
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
@@ -20,13 +20,14 @@ class Base(DeclarativeBase):
 class BaseMixin(object):
     __mapper_args__ = {"always_refresh": True}
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, sort_order=-1)
     created_by: Mapped[int] = mapped_column(default=0)
     updated_by: Mapped[int] = mapped_column(default=0)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.utcnow, onupdate=datetime.utcnow
     )
+    is_deleted: Mapped[bool] = mapped_column(default=False)
 
 
 class User(BaseMixin, Base):
